@@ -173,15 +173,15 @@
             });
         }
 
-        // Refresh the email (generate a new one)
-        function refreshEmail() {
-            generateEmail();
+        // Refresh the page
+        function refreshPage() {
+            location.reload(); // This reloads the page without changing the generated email
         }
 
         // Event listeners
         document.getElementById('generateEmailBtn').addEventListener('click', generateEmail);
         copyBtn.addEventListener('click', copyEmailToClipboard);
-        refreshBtn.addEventListener('click', refreshEmail);
+        refreshBtn.addEventListener('click', refreshPage);
 
         // Load domains on page load
         loadDomains();
