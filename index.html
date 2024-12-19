@@ -153,6 +153,8 @@
         const copyBtn = document.getElementById('copyBtn');
         const refreshBtn = document.getElementById('refreshBtn');
         let currentEmail = '';
+        let currentLogin = '';
+        let currentDomain = '';
 
         // Load available domains
         async function loadDomains() {
@@ -175,10 +177,12 @@
             const username = usernameInput.value || generateRandomUsername();
             const domain = domainSelect.value;
             currentEmail = `${username}@${domain}`;
+            currentLogin = username;
+            currentDomain = domain;
             emailDisplay.innerHTML = `Your email: ${currentEmail}`;
             copyBtn.style.display = 'inline-block'; // Show copy button
             refreshBtn.style.display = 'inline-block'; // Show refresh button
-            fetchInbox();
+            fetchInbox(); // Automatically fetch inbox after email is generated
         }
 
         // Generate random username if the user doesn't provide one
@@ -194,9 +198,8 @@
         // Fetch inbox
         async function fetchInbox() {
             if (!currentEmail) return;
-            const [login, domain] = currentEmail.split('@');
             try {
-                const response = await fetch(`https://www.1secmail.com/api/v1/?action=getMessages&login=${login}&domain=${domain}`);
+                const response = await fetch(`https://www.1secmail.com/api/v1/?action=getMessages&login=${currentLogin}&domain=${currentDomain}`);
                 const messages = await response.json();
                 displayInbox(messages);
             } catch (error) {
@@ -226,9 +229,8 @@
         // Fetch email body
         async function fetchEmailBody(messageId) {
             if (!currentEmail) return;
-            const [login, domain] = currentEmail.split('@');
             try {
-                const response = await fetch(`https://www.1secmail.com/api/v1/?action=readMessage&login=${login}&domain=${domain}&id=${messageId}`);
+                const response = await fetch(`https://www.1secmail.com/api/v1/?action=readMessage&login=${currentLogin}&domain=${currentDomain}&id=${messageId}`);
                 const message = await response.json();
                 alert(`From: ${message.from}\nSubject: ${message.subject}\n\n${message.text}`);
             } catch (error) {
@@ -245,15 +247,15 @@
             });
         }
 
-        // Refresh the page
-        function refreshPage() {
-            location.reload(); // Reload page, but email stays the same
+        // Refresh the inbox (don't generate new email)
+        function refreshInbox() {
+            fetchInbox();
         }
 
         // Event listeners
         document.getElementById('generateEmailBtn').addEventListener('click', generateEmail);
         copyBtn.addEventListener('click', copyEmailToClipboard);
-        refreshBtn.addEventListener('click', refreshPage);
+        refreshBtn.addEventListener('click', refreshInbox);
 
         // Load domains on page load
         loadDomains();
