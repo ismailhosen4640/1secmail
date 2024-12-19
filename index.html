@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>1SecMail</title>
+    <title>1SecMail Web App</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -45,11 +45,10 @@
 </head>
 <body>
     <div class="container">
-        <h1>1SecMail</h1>
+        <h1>1SecMail Web App</h1>
         <div>
             <label for="username">Username:</label>
-            <input type="text" id="username" placeholder="Enter username">
-            <button id="randomUsernameBtn">Generate Random Username</button>
+            <input type="text" id="username" placeholder="Enter username" required>
         </div>
         <div>
             <label for="domain">Select Domain:</label>
@@ -95,19 +94,13 @@
             }
         }
 
-        // Generate random username
-        function generateRandomUsername() {
-            const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
-            let username = '';
-            for (let i = 0; i < 10; i++) {
-                username += chars.charAt(Math.floor(Math.random() * chars.length));
-            }
-            return username;
-        }
-
         // Generate email
         function generateEmail() {
-            const username = usernameInput.value.trim() || generateRandomUsername();
+            const username = usernameInput.value.trim();
+            if (!username) {
+                alert('Please enter a username!');
+                return;
+            }
             const domain = domainSelect.value;
             currentEmail = `${username}@${domain}`;
             emailDisplay.innerHTML = `Your email: ${currentEmail}`;
@@ -170,9 +163,6 @@
 
         // Event listeners
         document.getElementById('generateEmailBtn').addEventListener('click', generateEmail);
-        document.getElementById('randomUsernameBtn').addEventListener('click', () => {
-            usernameInput.value = generateRandomUsername();
-        });
         document.getElementById('refreshBtn').addEventListener('click', fetchInbox);
         copyBtn.addEventListener('click', copyEmailToClipboard);
 
