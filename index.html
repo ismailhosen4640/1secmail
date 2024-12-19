@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>1SecMail</title>
+    <title>1SecMail - Temporary Email Generator</title>
     <style>
         * {
             margin: 0;
@@ -118,7 +118,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>1SecMail</h1>
+        <h1>1SecMail - Temporary Email Generator</h1>
         <div>
             <label for="domain">Select Domain:</label>
             <select id="domain">
@@ -220,6 +220,19 @@
                                     <button onclick="fetchEmailBody(${message.id})">View Email</button>`;
                     inboxList.appendChild(li);
                 });
+            }
+        }
+
+        // Fetch email body
+        async function fetchEmailBody(messageId) {
+            if (!currentEmail) return;
+            const [login, domain] = currentEmail.split('@');
+            try {
+                const response = await fetch(`https://www.1secmail.com/api/v1/?action=readMessage&login=${login}&domain=${domain}&id=${messageId}`);
+                const message = await response.json();
+                alert(`From: ${message.from}\nSubject: ${message.subject}\n\n${message.text}`);
+            } catch (error) {
+                console.error('Error fetching email body:', error);
             }
         }
 
