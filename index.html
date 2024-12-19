@@ -5,12 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>1SecMail</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        /* Basic styles for your app */
         body {
             font-family: 'Arial', sans-serif;
             background-color: #f4f4f4;
@@ -146,6 +141,10 @@
     </div>
 
     <script>
+        // Initialize Telegram Web App settings
+        window.Telegram.WebApp.ready();
+        window.Telegram.WebApp.expand();
+
         const domainSelect = document.getElementById('domain');
         const usernameInput = document.getElementById('username');
         const emailDisplay = document.getElementById('emailDisplay');
@@ -156,7 +155,7 @@
         let currentLogin = '';
         let currentDomain = '';
 
-        // Load available domains
+        // Load available domains from API
         async function loadDomains() {
             try {
                 const response = await fetch('https://www.1secmail.com/api/v1/?action=getDomainList');
@@ -185,7 +184,7 @@
             fetchInbox(); // Automatically fetch inbox after email is generated
         }
 
-        // Generate random username if the user doesn't provide one
+        // Generate random username
         function generateRandomUsername() {
             const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
             let username = '';
@@ -195,7 +194,7 @@
             return username;
         }
 
-        // Fetch inbox
+        // Fetch inbox messages
         async function fetchInbox() {
             if (!currentEmail) return;
             try {
