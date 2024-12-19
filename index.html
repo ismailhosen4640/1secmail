@@ -35,11 +35,18 @@
             padding: 10px;
             border: 1px solid #ccc;
         }
-        .copy-btn {
+        .copy-btn, .refresh-btn {
             margin-top: 10px;
             padding: 5px 10px;
             font-size: 14px;
             cursor: pointer;
+        }
+        .button-container {
+            display: inline-block;
+            margin-top: 10px;
+        }
+        .button-container button {
+            margin-left: 10px;
         }
     </style>
 </head>
@@ -56,7 +63,10 @@
         <div id="emailDisplay" class="email-display">
             Your email will appear here
         </div>
-        <button id="copyBtn" class="copy-btn" style="display: none;">Copy Email</button>
+        <div class="button-container">
+            <button id="copyBtn" class="copy-btn" style="display: none;">Copy Email</button>
+            <button id="refreshBtn" class="refresh-btn" style="display: none;">Refresh</button>
+        </div>
         <div class="inbox">
             <h2>Inbox</h2>
             <ul id="inboxList">
@@ -70,6 +80,7 @@
         const emailDisplay = document.getElementById('emailDisplay');
         const inboxList = document.getElementById('inboxList');
         const copyBtn = document.getElementById('copyBtn');
+        const refreshBtn = document.getElementById('refreshBtn');
         let currentEmail = '';
 
         // Load available domains
@@ -105,6 +116,7 @@
             currentEmail = `${username}@${domain}`;
             emailDisplay.innerHTML = `Your email: ${currentEmail}`;
             copyBtn.style.display = 'inline-block'; // Show the copy button after email is generated
+            refreshBtn.style.display = 'inline-block'; // Show the refresh button after email is generated
             fetchInbox();
         }
 
@@ -161,9 +173,15 @@
             });
         }
 
+        // Refresh the email (generate a new one)
+        function refreshEmail() {
+            generateEmail();
+        }
+
         // Event listeners
         document.getElementById('generateEmailBtn').addEventListener('click', generateEmail);
         copyBtn.addEventListener('click', copyEmailToClipboard);
+        refreshBtn.addEventListener('click', refreshEmail);
 
         // Load domains on page load
         loadDomains();
