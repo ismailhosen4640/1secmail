@@ -3,67 +3,137 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>1SecMail Web App</title>
+    <title>1SecMail</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            margin: 20px;
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
         }
+
         .container {
-            max-width: 600px;
-            margin: auto;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
         }
-        input, select, button {
-            margin: 10px;
-            padding: 10px;
-            font-size: 16px;
+
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 2rem;
         }
+
+        select, button {
+            padding: 12px;
+            font-size: 1rem;
+            margin: 10px 0;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            width: 100%;
+            max-width: 350px;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
         .email-display {
-            margin-top: 20px;
+            margin: 20px 0;
+            font-size: 1.2rem;
             font-weight: bold;
+            color: #333;
         }
+
+        .copy-btn, .refresh-btn {
+            padding: 8px 16px;
+            font-size: 1rem;
+            margin: 10px 5px;
+            border-radius: 8px;
+            cursor: pointer;
+            border: none;
+            background-color: #28a745;
+            color: white;
+        }
+
+        .copy-btn {
+            background-color: #28a745;
+        }
+
+        .refresh-btn {
+            background-color: #ffc107;
+        }
+
+        .copy-btn:hover {
+            background-color: #218838;
+        }
+
+        .refresh-btn:hover {
+            background-color: #e0a800;
+        }
+
         .inbox {
             margin-top: 30px;
+            text-align: left;
         }
+
         .inbox ul {
             list-style-type: none;
             padding: 0;
         }
+
         .inbox li {
-            margin: 5px 0;
+            background-color: #f8f9fa;
             padding: 10px;
-            border: 1px solid #ccc;
+            margin-bottom: 8px;
+            border-radius: 6px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         }
-        .copy-btn, .refresh-btn {
-            margin-top: 10px;
-            padding: 5px 10px;
-            font-size: 14px;
-            cursor: pointer;
-        }
-        .button-container {
-            display: inline-block;
-            margin-top: 10px;
-        }
-        .button-container button {
-            margin-left: 10px;
+
+        @media screen and (max-width: 480px) {
+            h1 {
+                font-size: 1.5rem;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>1SecMail Web App</h1>
+        <h1>1SecMail</h1>
         <div>
             <label for="domain">Select Domain:</label>
-            <select id="domain"></select>
+            <select id="domain">
+                <!-- Domains will be dynamically added here -->
+            </select>
         </div>
         <div>
-            <button id="generateEmailBtn">Generate Email</button>
+            <label for="username">Enter Username:</label>
+            <input type="text" id="username" placeholder="Enter username" />
         </div>
+        <button id="generateEmailBtn">Generate Email</button>
         <div id="emailDisplay" class="email-display">
             Your email will appear here
         </div>
-        <div class="button-container">
+        <div>
             <button id="copyBtn" class="copy-btn" style="display: none;">Copy Email</button>
             <button id="refreshBtn" class="refresh-btn" style="display: none;">Refresh</button>
         </div>
@@ -77,6 +147,7 @@
 
     <script>
         const domainSelect = document.getElementById('domain');
+        const usernameInput = document.getElementById('username');
         const emailDisplay = document.getElementById('emailDisplay');
         const inboxList = document.getElementById('inboxList');
         const copyBtn = document.getElementById('copyBtn');
@@ -99,7 +170,18 @@
             }
         }
 
-        // Generate random username
+        // Generate email
+        function generateEmail() {
+            const username = usernameInput.value || generateRandomUsername();
+            const domain = domainSelect.value;
+            currentEmail = `${username}@${domain}`;
+            emailDisplay.innerHTML = `Your email: ${currentEmail}`;
+            copyBtn.style.display = 'inline-block'; // Show copy button
+            refreshBtn.style.display = 'inline-block'; // Show refresh button
+            fetchInbox();
+        }
+
+        // Generate random username if the user doesn't provide one
         function generateRandomUsername() {
             const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
             let username = '';
@@ -107,17 +189,6 @@
                 username += chars.charAt(Math.floor(Math.random() * chars.length));
             }
             return username;
-        }
-
-        // Generate email
-        function generateEmail() {
-            const username = generateRandomUsername();
-            const domain = domainSelect.value;
-            currentEmail = `${username}@${domain}`;
-            emailDisplay.innerHTML = `Your email: ${currentEmail}`;
-            copyBtn.style.display = 'inline-block'; // Show the copy button after email is generated
-            refreshBtn.style.display = 'inline-block'; // Show the refresh button after email is generated
-            fetchInbox();
         }
 
         // Fetch inbox
@@ -152,18 +223,6 @@
             }
         }
 
-        // Fetch email body
-        async function fetchEmailBody(id) {
-            const [login, domain] = currentEmail.split('@');
-            try {
-                const response = await fetch(`https://www.1secmail.com/api/v1/?action=readMessage&login=${login}&domain=${domain}&id=${id}`);
-                const message = await response.json();
-                alert(`Subject: ${message.subject}\n\n${message.textBody}`);
-            } catch (error) {
-                console.error('Error loading email body:', error);
-            }
-        }
-
         // Copy email to clipboard
         function copyEmailToClipboard() {
             navigator.clipboard.writeText(currentEmail).then(() => {
@@ -175,7 +234,7 @@
 
         // Refresh the page
         function refreshPage() {
-            location.reload(); // This reloads the page without changing the generated email
+            location.reload(); // Reload page, but email stays the same
         }
 
         // Event listeners
