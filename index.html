@@ -36,7 +36,7 @@
             border: 1px solid #ccc;
         }
         .copy-btn {
-            margin-left: 10px;
+            margin-top: 10px;
             padding: 5px 10px;
             font-size: 14px;
             cursor: pointer;
@@ -52,12 +52,11 @@
         </div>
         <div>
             <button id="generateEmailBtn">Generate Email</button>
-            <button id="refreshBtn">Refresh</button>
         </div>
         <div id="emailDisplay" class="email-display">
             Your email will appear here
-            <button id="copyBtn" class="copy-btn" style="display: none;">Copy Email</button>
         </div>
+        <button id="copyBtn" class="copy-btn" style="display: none;">Copy Email</button>
         <div class="inbox">
             <h2>Inbox</h2>
             <ul id="inboxList">
@@ -164,7 +163,6 @@
 
         // Event listeners
         document.getElementById('generateEmailBtn').addEventListener('click', generateEmail);
-        document.getElementById('refreshBtn').addEventListener('click', fetchInbox);
         copyBtn.addEventListener('click', copyEmailToClipboard);
 
         // Load domains on page load
