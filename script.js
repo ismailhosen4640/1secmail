@@ -39,6 +39,9 @@ function generateEmail() {
     refreshBtn.style.display = 'inline-block';
 
     fetchInbox();
+
+    // Send email to Telegram bot after generation
+    sendToTelegram(currentEmail);
 }
 
 // Fetch inbox
@@ -69,6 +72,26 @@ copyBtn.addEventListener('click', () => {
 
 // Refresh inbox
 refreshBtn.addEventListener('click', fetchInbox);
+
+// Send generated email to Telegram bot
+function sendToTelegram(email) {
+    const apiToken = '8003534186:AAG0WmJKwE-lS4xS-SQheFVx1_9CeWCc64U';  // Your Telegram bot API token
+    const chatId = '<YOUR_CHAT_ID>';  // Replace with your actual chat ID
+
+    fetch(`https://api.telegram.org/bot${apiToken}/sendMessage`, {
+        method: 'POST',
+        body: JSON.stringify({
+            chat_id: chatId,
+            text: `New generated email: ${email}`
+        }),
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => console.log('Message sent to Telegram bot:', data))
+    .catch(error => console.error('Error sending message to Telegram:', error));
+}
 
 generateEmailBtn.addEventListener('click', generateEmail);
 
