@@ -47,10 +47,6 @@
     <div class="container">
         <h1>1SecMail Web App</h1>
         <div>
-            <label for="username">Username:</label>
-            <input type="text" id="username" placeholder="Enter username" required>
-        </div>
-        <div>
             <label for="domain">Select Domain:</label>
             <select id="domain"></select>
         </div>
@@ -72,7 +68,6 @@
 
     <script>
         const domainSelect = document.getElementById('domain');
-        const usernameInput = document.getElementById('username');
         const emailDisplay = document.getElementById('emailDisplay');
         const inboxList = document.getElementById('inboxList');
         const copyBtn = document.getElementById('copyBtn');
@@ -94,13 +89,19 @@
             }
         }
 
+        // Generate random username
+        function generateRandomUsername() {
+            const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+            let username = '';
+            for (let i = 0; i < 10; i++) {
+                username += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return username;
+        }
+
         // Generate email
         function generateEmail() {
-            const username = usernameInput.value.trim();
-            if (!username) {
-                alert('Please enter a username!');
-                return;
-            }
+            const username = generateRandomUsername();
             const domain = domainSelect.value;
             currentEmail = `${username}@${domain}`;
             emailDisplay.innerHTML = `Your email: ${currentEmail}`;
