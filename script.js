@@ -1,56 +1,81 @@
-// DOM Elements
-const generateEmailBtn = document.getElementById("generateEmailBtn");
-const emailDisplay = document.getElementById("emailDisplay");
-const inboxList = document.getElementById("inboxList");
+const domainSelect = document.getElementById('domain');
+const usernameInput = document.getElementById('username');
+const emailDisplay = document.getElementById('emailDisplay');
+const inboxList = document.getElementById('inboxList');
+const copyBtn = document.getElementById('copyBtn');
+const refreshBtn = document.getElementById('refreshBtn');
+const generateEmailBtn = document.getElementById('generateEmailBtn');
 
-// Generate Random Email using 1SecMail API
-generateEmailBtn.addEventListener("click", async () => {
-  try {
-    // Generate random email
-    const response = await fetch(
-      "https://www.1secmail.com/api/v1/?action=genRandomMailbox&count=1"
-    );
-    const emails = await response.json();
-    const email = emails[0];
-    emailDisplay.textContent = email;
+let currentEmail = '';
+let currentLogin = '';
+let currentDomain = '';
 
-    // Clear previous inbox
-    inboxList.innerHTML = `<li>Fetching inbox for ${email}...</li>`;
+// Load domains
+async function loadDomains() {
+    try {
+        const response = await fetch('https://www.1secmail.com/api/v1/?action=getDomainList');
+        const domains = await response.json();
+        domains.forEach(domain => {
+            const option = document.createElement('option');
+            option.value = domain;
+            option.textContent = domain;
+            domainSelect.appendChild(option);
+        });
+    } catch (error) {
+        console.error('Error loading domains:', error);
+    }
+}
 
-    // Fetch inbox
-    fetchInbox(email);
-  } catch (error) {
-    emailDisplay.textContent = "Error generating email. Try again.";
-    console.error(error);
-  }
+// Generate random username
+function generateRandomUsername() {
+    return Math.random().toString(36).substring(2, 10);
+}
+
+// Generate email
+function generateEmail() {
+    const username = usernameInput.value || generateRandomUsername();
+    const domain = domainSelect.value;
+    currentEmail = `${username}@${domain}`;
+    currentLogin = username;
+    currentDomain = domain;
+
+    emailDisplay.textContent = currentEmail;
+    copyBtn.style.display = 'inline-block';
+    refreshBtn.style.display = 'inline-block';
+
+    fetchInbox();
+}
+
+// Fetch inbox
+function fetchInbox() {
+    if (!currentEmail) return;
+    fetch(`https://www.1secmail.com/api/v1/?action=getMessages&login=${currentLogin}&domain=${currentDomain}`)
+        .then(res => res.json())
+        .then(messages => {
+            inboxList.innerHTML = '';
+            if (messages.length === 0) {
+                inboxList.innerHTML = '<li>Inbox is empty.</li>';
+            } else {
+                messages.forEach(message => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `<strong>From:</strong> ${message.from}<br><strong>Subject:</strong> ${message.subject}`;
+                    inboxList.appendChild(li);
+                });
+            }
+        });
+}
+
+// Copy email
+copyBtn.addEventListener('click', () => {
+    navigator.clipboard.writeText(currentEmail).then(() => {
+        alert('Email copied to clipboard!');
+    });
 });
 
-// Fetch Inbox Messages
-async function fetchInbox(email) {
-  try {
-    const [username, domain] = email.split("@");
-    const response = await fetch(
-      `https://www.1secmail.com/api/v1/?action=getMessages&login=${username}&domain=${domain}`
-    );
-    const messages = await response.json();
+// Refresh inbox
+refreshBtn.addEventListener('click', fetchInbox);
 
-    // Update inbox list
-    if (messages.length > 0) {
-      inboxList.innerHTML = "";
-      messages.forEach((message) => {
-        const listItem = document.createElement("li");
-        listItem.innerHTML = `
-          <strong>From:</strong> ${message.from} <br>
-          <strong>Subject:</strong> ${message.subject} <br>
-          <strong>Date:</strong> ${message.date}
-        `;
-        inboxList.appendChild(listItem);
-      });
-    } else {
-      inboxList.innerHTML = `<li>No new messages found.</li>`;
-    }
-  } catch (error) {
-    inboxList.innerHTML = `<li>Error fetching inbox. Try again later.</li>`;
-    console.error(error);
-  }
-}
+generateEmailBtn.addEventListener('click', generateEmail);
+
+// Load domains on page load
+loadDomains();
