@@ -26,14 +26,9 @@ async function loadDomains() {
     }
 }
 
-// Generate random username
-function generateRandomUsername() {
-    return Math.random().toString(36).substring(2, 10);
-}
-
 // Generate email
 function generateEmail() {
-    const username = usernameInput.value || generateRandomUsername();
+    const username = usernameInput.value || Math.random().toString(36).substring(2, 10);
     const domain = domainSelect.value;
     currentEmail = `${username}@${domain}`;
     currentLogin = username;
@@ -79,3 +74,22 @@ generateEmailBtn.addEventListener('click', generateEmail);
 
 // Load domains on page load
 loadDomains();
+
+// Telegram Mini App Integration
+if (window.Telegram.WebApp) {
+    const webApp = Telegram.WebApp;
+
+    // Setting up Telegram theme
+    document.body.style.backgroundColor = webApp.themeParams.bg_color || "#ffffff";
+    document.body.style.color = webApp.themeParams.text_color || "#000000";
+
+    // Expanding the WebApp
+    webApp.expand();
+
+    // Send data back to Telegram bot when email is generated
+    generateEmailBtn.addEventListener('click', () => {
+        if (currentEmail) {
+            webApp.sendData(JSON.stringify({ email: currentEmail }));
+        }
+    });
+}
