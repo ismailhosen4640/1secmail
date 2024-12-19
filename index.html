@@ -111,7 +111,7 @@
             const domain = domainSelect.value;
             currentEmail = `${username}@${domain}`;
             emailDisplay.innerHTML = `Your email: ${currentEmail}`;
-            copyBtn.style.display = 'inline-block';
+            copyBtn.style.display = 'inline-block'; // Show the copy button after email is generated
             fetchInbox();
         }
 
