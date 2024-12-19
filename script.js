@@ -75,7 +75,7 @@ refreshBtn.addEventListener('click', fetchInbox);
 
 // Send generated email to Telegram bot
 function sendToTelegram(email) {
-    const apiToken = '8003534186:AAG0WmJKwE-lS4xS-SQheFVx1_9CeWCc64U';  // Your Telegram bot API token
+    const apiToken = '8003534186:AAFUTOlIT0LrzRYgDdm8JluhS_MDbe8n9Nw';  // Your Telegram bot API token
     const chatId = '<YOUR_CHAT_ID>';  // Replace with your actual chat ID
 
     fetch(`https://api.telegram.org/bot${apiToken}/sendMessage`, {
