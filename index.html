@@ -3,105 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>1SecMail Telegram Mini App</title>
+    <title>1SecMail</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <style>
-        /* আগের CSS কোডের মতো */
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
-        <h1>Welcome to 1SecMail!</h1>
-        <label for="domain">Select Domain:</label>
-        <select id="domain"></select>
+        <header>
+            <h1>1SecMail</h1>
+            <p>Create temporary email addresses instantly!</p>
+        </header>
+        
+        <main>
+            <div class="form-group">
+                <label for="domain">Select Domain:</label>
+                <select id="domain"></select>
+            </div>
 
-        <label for="username">Enter Username:</label>
-        <input type="text" id="username" placeholder="Enter username">
+            <div class="form-group">
+                <label for="username">Enter Username:</label>
+                <input type="text" id="username" placeholder="Enter username">
+            </div>
 
-        <button id="generateEmailBtn">Generate Email</button>
+            <button id="generateEmailBtn">Generate Email</button>
 
-        <div id="emailDisplay" class="email-display">Your email will appear here</div>
+            <div id="emailDisplay" class="email-display">Your email will appear here</div>
 
-        <div class="btn-group">
-            <button id="copyBtn" style="display: none;">Copy Email</button>
-            <button id="refreshBtn" style="display: none;">Refresh Inbox</button>
-        </div>
+            <div class="btn-group">
+                <button id="copyBtn" style="display: none;">Copy Email</button>
+                <button id="refreshBtn" style="display: none;">Refresh Inbox</button>
+            </div>
 
-        <div class="inbox">
-            <h2>Inbox</h2>
-            <ul id="inboxList">
-                <li>No emails yet. Generate an email to check your inbox.</li>
-            </ul>
-        </div>
+            <div class="inbox">
+                <h2>Inbox</h2>
+                <ul id="inboxList">
+                    <li>No emails yet. Generate an email to check your inbox.</li>
+                </ul>
+            </div>
+        </main>
 
-        <button id="exitButton">Exit App</button>
+        <footer>
+            <p>Powered by <strong>1SecMail</strong></p>
+        </footer>
     </div>
 
-    <script>
-        const tg = window.Telegram.WebApp;
-        tg.ready();
-
-        const domainSelect = document.getElementById('domain');
-        const usernameInput = document.getElementById('username');
-        const emailDisplay = document.getElementById('emailDisplay');
-        const inboxList = document.getElementById('inboxList');
-        const copyBtn = document.getElementById('copyBtn');
-        const refreshBtn = document.getElementById('refreshBtn');
-
-        let currentEmail = '';
-        let currentLogin = '';
-        let currentDomain = '';
-
-        async function loadDomains() {
-            try {
-                const response = await fetch('https://www.1secmail.com/api/v1/?action=getDomainList');
-                const domains = await response.json();
-                domains.forEach(domain => {
-                    const option = document.createElement('option');
-                    option.value = domain;
-                    option.textContent = domain;
-                    domainSelect.appendChild(option);
-                });
-            } catch (error) {
-                console.error('Error loading domains:', error);
-            }
-        }
-
-        function generateEmail() {
-            const username = usernameInput.value || generateRandomUsername();
-            const domain = domainSelect.value;
-            currentEmail = `${username}@${domain}`;
-            currentLogin = username;
-            currentDomain = domain;
-
-            emailDisplay.textContent = currentEmail;
-            copyBtn.style.display = 'inline-block';
-            refreshBtn.style.display = 'inline-block';
-
-            fetchInbox();
-        }
-
-        function fetchInbox() {
-            if (!currentEmail) return;
-            fetch(`https://www.1secmail.com/api/v1/?action=getMessages&login=${currentLogin}&domain=${currentDomain}`)
-                .then(res => res.json())
-                .then(messages => {
-                    inboxList.innerHTML = '';
-                    if (messages.length === 0) {
-                        inboxList.innerHTML = '<li>Inbox is empty.</li>';
-                    } else {
-                        messages.forEach(message => {
-                            const li = document.createElement('li');
-                            li.innerHTML = `<strong>From:</strong> ${message.from}<br><strong>Subject:</strong> ${message.subject}`;
-                            inboxList.appendChild(li);
-                        });
-                    }
-                });
-        }
-
-        loadDomains();
-        document.getElementById('generateEmailBtn').addEventListener('click', generateEmail);
-        document.getElementById('exitButton').addEventListener('click', () => tg.close());
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
